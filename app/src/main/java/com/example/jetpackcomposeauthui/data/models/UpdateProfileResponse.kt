@@ -1,3 +1,6 @@
 package com.example.jetpackcomposeauthui.data.models
 
-data class UpdateProfileResponse()
+data class UpdateProfileResponse(
+    val message: String,
+    val success: Boolean
+)

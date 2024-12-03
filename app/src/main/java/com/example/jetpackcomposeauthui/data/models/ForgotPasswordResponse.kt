@@ -1,4 +1,6 @@
 package com.example.jetpackcomposeauthui.data.models
 
-class ForgotPasswordResponse {
-}
+data class ForgotPasswordResponse(
+    val success: Boolean,
+    val message: String
+)

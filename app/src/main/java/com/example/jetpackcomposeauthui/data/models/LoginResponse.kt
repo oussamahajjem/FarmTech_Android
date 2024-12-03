@@ -1,6 +1,7 @@
-package com.example.jetpackcomposeauthui.data.models
+import com.google.gson.annotations.SerializedName
 
 data class LoginResponse(
-    val message: String,
-    val token: String? = null
+    @SerializedName("accessToken") val accessToken: String,
+    @SerializedName("refreshToken") val refreshToken: String,
+    @SerializedName("userId") val userId: String
 )

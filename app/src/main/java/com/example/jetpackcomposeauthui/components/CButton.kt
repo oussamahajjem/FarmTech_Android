@@ -17,7 +17,7 @@ import com.example.jetpackcomposeauthui.ui.theme.AlegreyaSansFontFamily
 
 @Composable
 fun CButton(
-    onClick: () -> Unit = {},
+    onClick:() -> Unit = {},
     text: String,
 ) {
     // make this button also resuable

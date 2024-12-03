@@ -1,38 +1,77 @@
+package com.example.jetpackcomposeauthui.data.models
+
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetpackcomposeauthui.data.api.ApiService
-import com.example.jetpackcomposeauthui.data.models.UpdateProfileDto
-import com.example.jetpackcomposeauthui.data.models.UpdateProfileResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Response
+import com.example.jetpackcomposeauthui.data.api.RetrofitClient
 
-class ProfileViewModel(private val apiService: ApiService) : ViewModel() {
+class EditProfileViewModel : ViewModel() {
+    private val apiService = RetrofitClient.apiService
 
-    fun updateProfile(
-        token: String,
-        name: String?,
-        oldPassword: String?,
-        newPassword: String?,
-        onSuccess: (Response<UpdateProfileResponse>) -> Unit,
-        onError: (String) -> Unit
-    ) {
+    private val _profileUpdateState = MutableStateFlow<ProfileUpdateState>(ProfileUpdateState.Idle)
+    val profileUpdateState: StateFlow<ProfileUpdateState> = _profileUpdateState
+
+    private val _userProfileData = MutableStateFlow<UserProfileData?>(null)
+    val userProfileData: StateFlow<UserProfileData?> = _userProfileData
+
+    fun fetchUserProfile(context: Context) {
         viewModelScope.launch {
             try {
-                val request = UpdateProfileDto(
-                    name = name,
-                    oldPassword = oldPassword,
-                    newPassword = newPassword
-                )
-                val response = apiService.updateProfile("Bearer $token", request)
-
+                val token = getToken(context)
+                if (token.isNullOrEmpty()) {
+                    _profileUpdateState.value = ProfileUpdateState.Error("No token found. Please log in again.")
+                    return@launch
+                }
+                val response = apiService.getUserProfile("Bearer $token")
                 if (response.isSuccessful) {
-                    onSuccess(response)
+                    _userProfileData.value = response.body()
                 } else {
-                    onError("Erreur : ${response.code()} - ${response.message()}")
+                    _profileUpdateState.value = ProfileUpdateState.Error("Failed to fetch user profile")
                 }
             } catch (e: Exception) {
-                onError("Exception : ${e.message}")
+                _profileUpdateState.value = ProfileUpdateState.Error("Error: ${e.localizedMessage}")
             }
         }
     }
+
+    fun editProfile(context: Context, updateProfileDto: UpdateProfileDto) {
+        viewModelScope.launch {
+            _profileUpdateState.value = ProfileUpdateState.Loading
+            val token = getToken(context)
+            if (token.isNullOrEmpty()) {
+                _profileUpdateState.value = ProfileUpdateState.Error("No token found. Please log in again.")
+                return@launch
+            }
+            try {
+                val response = apiService.editProfile("Bearer $token", updateProfileDto)
+                if (response.isSuccessful) {
+                    _profileUpdateState.value = ProfileUpdateState.Success("Profile updated successfully")
+                    fetchUserProfile(context) // Refresh user data after successful update
+                } else {
+                    when (response.code()) {
+                        401 -> _profileUpdateState.value = ProfileUpdateState.Unauthorized
+                        else -> _profileUpdateState.value = ProfileUpdateState.Error("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _profileUpdateState.value = ProfileUpdateState.Error("Exception: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    private fun getToken(context: Context): String? {
+        val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("access_token", null)
+    }
+}
+
+sealed class ProfileUpdateState {
+    object Idle : ProfileUpdateState()
+    object Loading : ProfileUpdateState()
+    data class Success(val message: String) : ProfileUpdateState()
+    data class Error(val message: String) : ProfileUpdateState()
+    object Unauthorized : ProfileUpdateState()
 }

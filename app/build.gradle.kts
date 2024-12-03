@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.jetpackcomposeauthui"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.jetpackcomposeauthui"
@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+        implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("io.coil-kt:coil-compose:2.2.2")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
@@ -65,6 +68,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.runtime:runtime-android:1.7.5")
+    implementation("androidx.graphics:graphics-shapes-android:1.0.1")
+    implementation("androidx.compose.foundation:foundation-android:1.7.5")
+    implementation("androidx.datastore:datastore-core-android:1.1.1")
+    implementation("androidx.datastore:datastore-preferences-core-jvm:1.1.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
