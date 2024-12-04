@@ -1,5 +1,5 @@
 
-import WeatherRecommendations
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.jetpackcomposeauthui.R
 import com.example.jetpackcomposeauthui.data.models.*
 import java.text.SimpleDateFormat
@@ -29,6 +30,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(
+    navController: NavController,
     viewModel: WeatherViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
@@ -55,7 +57,7 @@ fun WeatherScreen(
                     }
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = Color(0xFF1B5E20)
+                    containerColor = Color(0xFF011101)
                 )
             )
         }
@@ -72,17 +74,18 @@ fun WeatherScreen(
         ) {
             when (val state = weatherState) {
                 is WeatherState.Loading -> LoadingScreen()
-                is WeatherState.Success -> WeatherContent(state.weather)
+                is WeatherState.Success -> WeatherContent(state.weather, navController)
                 is WeatherState.Error -> ErrorScreen(state.message)
             }
         }
     }
 }
 
+
 @Composable
 fun LoadingScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = Color(0xFF1B5E20))
+        CircularProgressIndicator(color = Color(0xFF011101))
     }
 }
 
@@ -98,7 +101,7 @@ fun ErrorScreen(message: String) {
 }
 
 @Composable
-fun WeatherContent(weather: WeatherDto) {
+fun WeatherContent(weather: WeatherDto, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -108,7 +111,12 @@ fun WeatherContent(weather: WeatherDto) {
             WeatherSummaryCard(weather.summary)
         }
         item {
-            WeatherRecommendations(weather)
+            Button(
+                onClick = { navController.navigate("recommendations") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View Agricultural Recommendations")
+            }
         }
         items(weather.forecasts) { forecast ->
             ForecastItem(forecast)
@@ -133,13 +141,13 @@ fun WeatherSummaryCard(summary: SummaryDto) {
                 text = "Today's Agricultural Forecast",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1B5E20)
+                color = Color(0xFF011101)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = summary.phrase,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFF33691E)
+                color = Color(0xFF011101)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -163,7 +171,7 @@ fun WeatherSummaryCard(summary: SummaryDto) {
                 )
                 WeatherInfoItem(
                     icon = R.drawable.category,
-                    title = "Category",
+                    title = "com.example.jetpackcomposeauthui.data.models.com.example.jetpackcomposeauthui.data.models.Category",
                     value = summary.category
                 )
             }
@@ -215,7 +223,7 @@ fun ForecastItem(forecast: ForecastDto) {
                     text = formatDate(forecast.date),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1B5E20)
+                    color = Color(0xFF011101)
                 )
                 WeatherIcon(forecast.day.iconCode)
             }
@@ -246,7 +254,7 @@ fun ForecastItem(forecast: ForecastDto) {
             Text(
                 text = forecast.day.longPhrase,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF33691E)
+                color = Color(0xFF011101)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -296,7 +304,7 @@ fun AirQualitySection(airAndPollen: List<AirAndPollenDto>) {
             text = "Air Quality & Pollen",
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1B5E20)
+            color = Color(0xFF011101)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(

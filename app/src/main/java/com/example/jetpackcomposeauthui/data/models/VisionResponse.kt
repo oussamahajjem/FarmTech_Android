@@ -1,7 +1,11 @@
+package com.example.jetpackcomposeauthui.data.models
+
 data class VisionResponse(
     val categories: List<Category>,
     val description: Description,
-    val color: Color
+    val color: Color,
+    var diseaseDetected: Boolean = false,
+    var pestsDetected: Boolean = false
 )
 
 data class Category(

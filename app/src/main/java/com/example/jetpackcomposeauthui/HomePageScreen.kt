@@ -53,7 +53,7 @@ fun HomePageScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = Color(0xFF1B5E20)
+                    containerColor = Color(0xFF011101)
                 ),
                 actions = {
                     IconButton(onClick = {
@@ -192,11 +192,11 @@ fun getFeatures(): List<Feature> {
             "crop_health"
         ),
         Feature(
-            "Smart Irrigation",
+            "Recommendations",
             "Optimize your watering schedule",
             R.drawable.ic_water,
             R.drawable.bg_irrigation,
-            "irrigation"
+            "Recommendations"
         ),
         Feature(
             "Pest Detection",

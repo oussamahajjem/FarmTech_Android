@@ -1,15 +1,13 @@
 package com.example.jetpackcomposeauthui.data.api
 
 import LoginResponse
-import VisionResponse
-import android.telecom.Call
+import com.example.jetpackcomposeauthui.data.models.VisionResponse
 import com.example.jetpackcomposeauthui.data.models.ForgotPasswordDto
 import com.example.jetpackcomposeauthui.data.models.ForgotPasswordResponse
 import com.example.jetpackcomposeauthui.data.models.LoginDto
 import com.example.jetpackcomposeauthui.data.models.ResetPasswordDto
 import com.example.jetpackcomposeauthui.data.models.ResetPasswordResponse
 import com.example.jetpackcomposeauthui.data.models.SignUpResponse
-import com.example.jetpackcomposeauthui.data.models.SignupDto
 import com.example.jetpackcomposeauthui.data.models.UpdateProfileDto
 import com.example.jetpackcomposeauthui.data.models.UpdateProfileResponse
 import com.example.jetpackcomposeauthui.data.models.UserProfileData
@@ -26,7 +24,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
-import retrofit2.http.Query
 
 interface ApiService {
     @Multipart
@@ -60,7 +57,12 @@ interface ApiService {
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileData>
 
     @POST("vision/analyze")
-    suspend fun analyzeImage(@Body visionDto: VisionDto): Response<VisionResponse>
+    suspend fun analyzeImage(@Body visionDto: VisionDto): VisionResponse
+
+    @Multipart
+    @POST("vision/analyze")
+    suspend fun analyzeLocalImage(@Part file: MultipartBody.Part): VisionResponse
+
 }
 
 
