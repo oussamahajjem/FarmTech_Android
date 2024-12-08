@@ -6,9 +6,12 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -128,8 +131,21 @@ fun LoginScreen(
                 CButton(
                     text = "Sign In",
                     onClick = {
-                        viewModel.login(context,email, password)
+                        viewModel.login(context, email, password)
                     }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Gmail icon for Google Sign-In
+                Image(
+                    painter = painterResource(id = R.drawable.gmail),
+                    contentDescription = "Sign in with Google",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable {
+                            navController.navigate("google")
+                        }
                 )
 
                 if (loginState.isLoading) {
@@ -297,4 +313,3 @@ fun showToast(context: Context, message: String) {
 fun LoginScreenPreview() {
     LoginScreen(rememberNavController())
 }
-

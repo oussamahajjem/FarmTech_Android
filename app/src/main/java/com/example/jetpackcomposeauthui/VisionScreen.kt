@@ -14,8 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import com.example.jetpackcomposeauthui.data.models.Category
+import com.example.jetpackcomposeauthui.data.models.Color
 import com.example.jetpackcomposeauthui.data.models.VisionResponse
-import com.example.jetpackcomposeauthui.data.models.VisionViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -242,66 +243,25 @@ fun VisionResultDisplay(result: VisionResponse) {
         ) {
             Text("Analysis Results", style = MaterialTheme.typography.headlineSmall)
 
-            CropHealthSection(result)
-            DiseaseAndPestSection(result)
-            CategorySection(result)
+            result.description.captions.firstOrNull()?.let { caption ->
+                Text(
+                    text = caption.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            CategoriesSection(result.categories)
+            ColorSection(result.color)
         }
     }
 }
 
 @Composable
-fun CropHealthSection(result: VisionResponse) {
-    val cropHealthScore = result.categories.find { it.name.toLowerCase().contains("plant") }?.score ?: 0.0
-    val healthStatus = when {
-        cropHealthScore >= 0.8 -> "Excellent"
-        cropHealthScore >= 0.6 -> "Good"
-        cropHealthScore >= 0.4 -> "Fair"
-        else -> "Poor"
-    }
-
-    Column {
-        Text("Crop Health", style = MaterialTheme.typography.titleMedium)
-        LinearProgressIndicator(
-            progress = cropHealthScore.toFloat(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-        )
-        Text(
-            "Status: $healthStatus",
-            style = MaterialTheme.typography.bodyMedium,
-            color = when (healthStatus) {
-                "Excellent" -> androidx.compose.ui.graphics.Color.Green
-                "Good" -> androidx.compose.ui.graphics.Color(0xFF8BC34A)
-                "Fair" -> androidx.compose.ui.graphics.Color(0xFFFFC107)
-                else -> androidx.compose.ui.graphics.Color.Red
-            }
-        )
-    }
-}
-
-@Composable
-fun DiseaseAndPestSection(result: VisionResponse) {
-    Column {
-        Text("Disease and Pest Detection", style = MaterialTheme.typography.titleMedium)
-        Text(
-            "Disease Detected: ${if (result.diseaseDetected) "Yes" else "No"}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (result.diseaseDetected) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Green
-        )
-        Text(
-            "Pests Detected: ${if (result.pestsDetected) "Yes" else "No"}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (result.pestsDetected) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Green
-        )
-    }
-}
-
-@Composable
-fun CategorySection(result: VisionResponse) {
+fun CategoriesSection(categories: List<Category>) {
     Column {
         Text("Categories", style = MaterialTheme.typography.titleMedium)
-        result.categories.take(5).forEach { category ->
+        categories.take(5).forEach { category ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -314,6 +274,17 @@ fun CategorySection(result: VisionResponse) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ColorSection(color: Color) {
+    Column {
+        Text("Color Analysis", style = MaterialTheme.typography.titleMedium)
+        Text("Dominant Foreground: ${color.dominantColorForeground}")
+        Text("Dominant Background: ${color.dominantColorBackground}")
+        Text("Accent Color: ${color.accentColor}")
+        Text("Is Black and White: ${if (color.isBwImg) "Yes" else "No"}")
     }
 }
 

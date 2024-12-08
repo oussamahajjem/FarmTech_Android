@@ -1,5 +1,3 @@
-package com.example.jetpackcomposeauthui.data.models
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +6,8 @@ import kotlinx.coroutines.launch
 import android.content.Context
 import android.net.Uri
 import com.example.jetpackcomposeauthui.data.api.RetrofitClient
+import com.example.jetpackcomposeauthui.data.models.VisionDto
+import com.example.jetpackcomposeauthui.data.models.VisionResponse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -36,7 +36,7 @@ class VisionViewModel : ViewModel() {
                 val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
                 val result = RetrofitClient.apiService.analyzeLocalImage(body)
-                handleResult(result)
+                _visionResult.value = result
             } catch (e: Exception) {
                 _error.value = "Failed to analyze image: ${e.localizedMessage}"
             } finally {
@@ -52,20 +52,13 @@ class VisionViewModel : ViewModel() {
             try {
                 val visionDto = VisionDto(url)
                 val result = RetrofitClient.apiService.analyzeImage(visionDto)
-                handleResult(result)
+                _visionResult.value = result
             } catch (e: Exception) {
                 _error.value = "Failed to analyze image: ${e.localizedMessage}"
             } finally {
                 _isLoading.value = false
             }
         }
-    }
-
-    private fun handleResult(result: VisionResponse) {
-        _visionResult.value = result.copy(
-            diseaseDetected = checkForDiseases(result),
-            pestsDetected = checkForPests(result)
-        )
     }
 
     private fun createTempFileFromInputStream(inputStream: InputStream?): File {
@@ -76,16 +69,6 @@ class VisionViewModel : ViewModel() {
             }
         }
         return tempFile
-    }
-
-    private fun checkForDiseases(result: VisionResponse): Boolean {
-        val diseaseTags = listOf("blight", "rust", "mildew", "rot")
-        return result.description.tags.any { it.toLowerCase() in diseaseTags }
-    }
-
-    private fun checkForPests(result: VisionResponse): Boolean {
-        val pestTags = listOf("insect", "aphid", "caterpillar", "beetle")
-        return result.description.tags.any { it.toLowerCase() in pestTags }
     }
 }
 

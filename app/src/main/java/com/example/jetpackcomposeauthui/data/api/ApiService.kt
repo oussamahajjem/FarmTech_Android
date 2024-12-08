@@ -4,7 +4,11 @@ import LoginResponse
 import com.example.jetpackcomposeauthui.data.models.VisionResponse
 import com.example.jetpackcomposeauthui.data.models.ForgotPasswordDto
 import com.example.jetpackcomposeauthui.data.models.ForgotPasswordResponse
+import com.example.jetpackcomposeauthui.data.models.GoogleResponse
+import com.example.jetpackcomposeauthui.data.models.LandInfo
+import com.example.jetpackcomposeauthui.data.models.LandInfoWithWeather
 import com.example.jetpackcomposeauthui.data.models.LoginDto
+import com.example.jetpackcomposeauthui.data.models.MarketPriceResponse
 import com.example.jetpackcomposeauthui.data.models.ResetPasswordDto
 import com.example.jetpackcomposeauthui.data.models.ResetPasswordResponse
 import com.example.jetpackcomposeauthui.data.models.SignUpResponse
@@ -18,12 +22,15 @@ import okhttp3.RequestBody
 import retrofit2.Response
 
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiService {
     @Multipart
@@ -56,12 +63,37 @@ interface ApiService {
     @GET("auth/profile")
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileData>
 
-    @POST("vision/analyze")
-    suspend fun analyzeImage(@Body visionDto: VisionDto): VisionResponse
-
     @Multipart
     @POST("vision/analyze")
     suspend fun analyzeLocalImage(@Part file: MultipartBody.Part): VisionResponse
+
+    @POST("vision/analyze")
+    suspend fun analyzeImage(@Body visionDto: VisionDto): VisionResponse
+
+    @GET("market-prices")
+    suspend fun getMarketPrices(): List<MarketPriceResponse>
+
+    @POST("google-login")
+    suspend fun googleLogin(@Body idToken: String): Response<GoogleResponse>
+
+    @GET("land-info")
+    suspend fun getAllLandInfo(): List<LandInfo>
+
+    @POST("land-info")
+    suspend fun createLandInfo(@Body landInfo: LandInfo): LandInfo
+
+    @GET("land-info/{id}")
+    suspend fun getLandInfo(@Path("id") id: String): LandInfo
+
+    @PATCH("land-info/{id}")
+    suspend fun updateLandInfo(@Path("id") id: String, @Body landInfo: LandInfo): LandInfo
+
+    @DELETE("land-info/{id}")
+    suspend fun deleteLandInfo(@Path("id") id: String): LandInfo
+
+    @GET("land-info/{id}/with-weather")
+    suspend fun getLandInfoWithWeather(@Path("id") id: String): LandInfoWithWeather
+
 
 }
 

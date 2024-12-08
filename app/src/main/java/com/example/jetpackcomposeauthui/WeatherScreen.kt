@@ -171,7 +171,7 @@ fun WeatherSummaryCard(summary: SummaryDto) {
                 )
                 WeatherInfoItem(
                     icon = R.drawable.category,
-                    title = "com.example.jetpackcomposeauthui.data.models.com.example.jetpackcomposeauthui.data.models.Category",
+                    title = "category",
                     value = summary.category
                 )
             }

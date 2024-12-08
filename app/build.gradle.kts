@@ -1,6 +1,13 @@
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+    }
+}
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services") version "4.4.2" apply false
+
 }
 
 android {
@@ -51,11 +58,17 @@ android {
 
 dependencies {
 
-        implementation ("androidx.datastore:datastore-preferences:1.0.0")
+        implementation ("androidx.datastore:datastore-preferences:1.1.1")
+    implementation ("com.google.android.gms:play-services-auth:21.2.0")
+    implementation ("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("org.osmdroid:osmdroid-android:6.1.13")
+
 
     implementation ("androidx.compose.ui:ui:1.7.5")
     implementation ("androidx.compose.material:material:1.7.5")
-    implementation ("androidx.compose.foundation:foundation:1.5.0")
+    implementation ("androidx.compose.foundation:foundation:1.7.5")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -77,6 +90,12 @@ dependencies {
     implementation("androidx.datastore:datastore-core-android:1.1.1")
     implementation("androidx.datastore:datastore-preferences-core-jvm:1.1.1")
     implementation("com.google.ar.sceneform:core:1.17.1")
+    implementation("androidx.test:runner:1.5.2")
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
+    implementation("androidx.compose.ui:ui-test-android:1.7.5")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
+    implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -84,6 +103,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
 
 }

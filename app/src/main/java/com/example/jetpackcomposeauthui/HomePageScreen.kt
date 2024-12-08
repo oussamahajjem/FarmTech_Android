@@ -7,18 +7,25 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.jetpackcomposeauthui.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,9 +67,9 @@ fun HomePageScreen(navController: NavController) {
                         navController.navigate("editProfile")
                     }) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_edit_profile), // Icône de modification
+                            painter = painterResource(id = R.drawable.ic_edit_profile),
                             contentDescription = "Edit Profile",
-                            modifier = Modifier.size(24.dp) // Taille ajustée
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                     IconButton(onClick = {
@@ -78,6 +85,9 @@ fun HomePageScreen(navController: NavController) {
                     }
                 }
             )
+        },
+        bottomBar = {
+            BottomNavBar(navController)
         }
     ) { innerPadding ->
         Box(
@@ -193,10 +203,10 @@ fun getFeatures(): List<Feature> {
         ),
         Feature(
             "Recommendations",
-            "Optimize your watering schedule",
-            R.drawable.ic_water,
-            R.drawable.bg_irrigation,
-            "Recommendations"
+            "Get personalized agricultural advice",
+            R.drawable.ic_recommendations,
+            R.drawable.bg_recommendations,
+            "recommendations"
         ),
         Feature(
             "Pest Detection",
@@ -221,3 +231,37 @@ fun getFeatures(): List<Feature> {
         )
     )
 }
+
+@Composable
+fun BottomNavBar(navController: NavController) {
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        listOf(
+            BottomNavItem("Home", Icons.Default.Home, "homepage"),
+            BottomNavItem("Weather", Icons.Default.Face, "weather"),
+            BottomNavItem("Market", Icons.Default.ShoppingCart, "market"),
+            BottomNavItem("Profile", Icons.Default.Person, "editProfile")
+        ).forEach { item ->
+            NavigationBarItem(
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { Text(item.title) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+    }
+}
+
+data class BottomNavItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+)
+
